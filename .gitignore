@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -141,3 +142,14 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+=======
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+data/
+*.db
+.DS_Store
+.pytest_cache/
+>>>>>>> ee3f60c (add FastAPI project skeleton and stubs)
