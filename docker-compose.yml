@@ -1,0 +1,49 @@
+# Runs the whole app as two containers:
+#   api: FastAPI on http://localhost:8000
+#   ui:  Streamlit on http://localhost:8501 (open this one in the browser)
+#
+# Start:  docker compose up --build
+# Stop:   Ctrl+C, then `docker compose down`
+#
+# Values like ${API_KEYS:-dev-key-change-me} read from a .env file in this
+# folder if it exists, and otherwise fall back to the default after ":-".
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      API_KEYS: ${API_KEYS:-dev-key-change-me}
+      DAILY_QUOTA: ${DAILY_QUOTA:-50}
+      DATABASE_URL: sqlite:///./data/coach.db
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      RATE_LIMIT: ${RATE_LIMIT:-10/minute}
+    volumes:
+      # Keeps the SQLite database outside the container, so interactions
+      # survive `docker compose down` and image rebuilds.
+      - coach-data:/app/data
+    healthcheck:
+      # The slim Python image has no curl, so use Python to hit /health.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  ui:
+    build: ./ui
+    ports:
+      - "8501:8501"
+    environment:
+      # Inside Docker, containers reach each other by service name,
+      # so the UI calls "api", not "localhost".
+      API_BASE_URL: http://api:8000
+      API_KEY: ${UI_API_KEY:-dev-key-change-me}
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  coach-data:

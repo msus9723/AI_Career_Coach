@@ -6,7 +6,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from app.api.routes import compare, health
+from app.api.routes import compare, gap_analysis, health
 from app.core.logging import configure_logging
 from app.core.security import limiter
 from app.db.session import init_db
@@ -36,6 +36,8 @@ def create_app() -> FastAPI:
     )
     application.include_router(health.router)
     application.include_router(compare.router)
+    # Week 1 Task 1: registers POST /gap-analysis.
+    application.include_router(gap_analysis.router)
     return application
 
 

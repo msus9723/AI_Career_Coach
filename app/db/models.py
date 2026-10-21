@@ -13,10 +13,18 @@ class Interaction(Base):
     __tablename__ = "interactions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # Task 7: the same UUID that appears in the API response, log lines, and
+    # telemetry, so a DB row can be matched to everything else for one request.
+    # Nullable because the legacy /compare route doesn't set it.
+    request_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
+    # Task 7: which API endpoint produced this row, e.g. "/gap-analysis".
+    endpoint: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     user_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    # Task 7: how long the request took (ms) up to the moment it was saved.
+    latency_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     resume_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     jd_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     prompt_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
