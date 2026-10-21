@@ -2,6 +2,7 @@
 .gitignore
 .env
 .venv
+.venv-ui
 venv
 __pycache__
 *.py[cod]

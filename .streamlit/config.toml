@@ -1,0 +1,10 @@
+# Streamlit reads this automatically when you run `streamlit run ui/app.py`
+# from the project root.
+
+[server]
+# Skips the first-run "Email:" prompt. It also means Streamlit won't open a
+# browser tab by itself; open http://localhost:8501 manually.
+headless = true
+
+[browser]
+gatherUsageStats = false
